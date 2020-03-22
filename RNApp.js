@@ -97,7 +97,7 @@ class App extends React.Component {
         }
         try
         {
-        	Linking.openURL("https://xumm.app/")
+        	Linking.openURL(text)
         	
         }
         catch (error) {
