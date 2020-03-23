@@ -97,7 +97,9 @@ class App extends React.Component {
         }
         try
         {
-        	Linking.openURL(text)
+        	var url = "'" + text + "'";
+        	
+        	Linking.openURL(url);
         	
         }
         catch (error) {
