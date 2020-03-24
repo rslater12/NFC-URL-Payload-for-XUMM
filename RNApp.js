@@ -19,6 +19,8 @@ import AwesomeAlert from 'react-native-awesome-alerts';
 
 let text;
 let url;
+let url1;
+let part = "https://xumm.app/sign/"
 
 class App extends React.Component {
     constructor(props){
@@ -104,8 +106,8 @@ class App extends React.Component {
         try
         {
         	
-        	url = this.state.log;
-        
+        	url1 = this.state.log;
+        	url = part + url1;
         	Linking.canOpenURL(url)
         	  .then((supported) => {
         	    if (!supported) {
@@ -116,7 +118,7 @@ class App extends React.Component {
         	  })
     }
         catch (error) {
-            alert( "Error Loading URL: " + url)
+            alert( "Error Loading URL: "+url )
         }
    
 
@@ -211,21 +213,7 @@ class App extends React.Component {
                 <Text>{this.state.log}</Text>
             </View>
 
-            <TextInput
-                              style={styles.textInput1}
-                               onChangeText={this.onChangeText}
-                              autoCompleteType="off"
-                               autoCapitalize="none"
-                               autoCorrect={false}
-                               placeholderTextColor="#888888"
-                               placeholder="Insert XRP Address to write" />
-
-                            	   <TouchableOpacity
-                             style={styles.buttonRead}
-                               onPress={this.writeData}>
-                             <Text style={styles.buttonText}>Write</Text>
-                           </TouchableOpacity>
-                     
+           
              
  
                 </ScrollView>
@@ -267,5 +255,19 @@ const styles = StyleSheet.create({
  
 })
  
-
+//  <TextInput
+ //                             style={styles.textInput1}
+ //                            onChangeText={this.onChangeText}
+ //                             autoCompleteType="off"
+ //                              autoCapitalize="none"
+ //                              autoCorrect={false}
+ //                              placeholderTextColor="#888888"
+ //                              placeholder="Insert XRP Address to write" />
+//
+  //                          	   <TouchableOpacity
+  //                           style={styles.buttonRead}
+  //                             onPress={this.writeData}>
+  //                           <Text style={styles.buttonText}>Write</Text>
+  //                         </TouchableOpacity>
+                     
 export default App;
