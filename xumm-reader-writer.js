@@ -3,13 +3,141 @@
 // NFC Card Mifare Ultralight.
 // USB NFC RFID Reader, ARC122u (Requires Readers drivers)
 
+const destinationAddress = "" //db
+var xummPayload;
+var p;
+var apikey = '';
+var apisecret = '';
+// xumm payload
+var request = require("request");
+
 var pcsc = require('pcsclite');
 var pcsc = pcsc();
 const { NFC } = require('nfc-pcsc');
-
 const nfc = new NFC(); 
 
-const xummPayload = 'n' + 'https://xumm.app/';	
+function createPayload() {
+var jar = request.jar();
+jar.setCookie(request.cookie("__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754"), "https://xumm.app/api/v1/platform/payload");
+
+var options = {
+  method: 'POST',
+  url: 'https://xumm.app/api/v1/platform/payload',
+  headers: {
+    'content-type': 'application/json',
+    'x-api-key': apikey,
+    'x-api-secret': apisecret,
+    authorization: '' // response required.
+  },
+  body: {
+    txjson: {
+      TransactionType: 'Payment',
+      Destination: destinationAddress,
+      Fee: '12'
+    }
+  },
+  json: true,
+  jar: 'JAR'
+};
+
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+xummPayload = body.next.always;
+var len = xummPayload.length;
+p = xummPayload.slice(22, len);
+  console.log(body.next.always);
+ // console.log("this is " + p)
+  
+});
+
+nfc.on('reader', async reader => {
+
+	console.log(reader.name + ' device attached');
+console.log('Write Payload URL from XUMM to Card')
+
+	const ultralight = new MifareUltralight(reader);
+
+
+	reader.on('card', async card => {
+
+		console.log('card detected', card);
+
+		const password = 'FFFFFFFF'; // default password
+		const pack = '0000'; // default pack
+
+		try {
+
+			await ultralight.passwordAuthenticate(password, pack);
+
+			console.log('passwordAuthenticate: successfully authenticated');
+
+		} catch (err) {
+			console.log('passwordAuthenticate error:', err);
+		}
+
+		
+		
+		 try {
+			
+			 await p;
+			 const Payload = 'n' + p;
+			 console.log(Payload)
+			const data = Buffer.allocUnsafe(44).fill(0);
+			  
+			const payload = Buffer.from(Payload);
+			
+			
+			data.write(payload.toString());
+			
+			await reader.write(6, data);
+			
+			console.log(Payload +": From Xumm Has Been Written To The Card")
+			
+		
+		 } catch (err) {
+			console.log('write error:', err);
+			return;
+		 }
+		 try {
+
+			 const data = await ultralight.fastRead(4, 19);
+			 const payload =  Buffer.from(data).toString();
+	
+			 console.log('Data Successfully Written:' + Payload);
+			 
+		
+
+		 } catch (err) {
+			 console.log('fastRead error:', err);
+			 return;
+		 }
+
+
+		});
+
+	reader.on('error', err => {
+		console.log(`an error occurred`, reader, err);
+	});
+
+	reader.on('end', () => {
+		console.log(`device removed`, reader);
+	});
+
+});
+
+
+nfc.on('error', err => {
+	console.log(`an error occurred`, err);
+	
+})
+} 
+
+createPayload();
+
+
+
+
+
 
 class TransmitError  {
 
@@ -170,79 +298,4 @@ class MifareUltralight {
 }
 
 
-nfc.on('reader', async reader => {
 
-	console.log(reader.name + ' device attached');
-console.log('Write next.always URL from XUMM to Card')
-
-	const ultralight = new MifareUltralight(reader);
-
-	reader.on('card', async card => {
-
-		console.log('card detected', card);
-
-		const password = 'FFFFFFFF'; // default password
-		const pack = '0000'; // default pack
-
-		try {
-
-			await ultralight.passwordAuthenticate(password, pack);
-
-			console.log('passwordAuthenticate: successfully authenticated');
-
-		} catch (err) {
-			console.log('passwordAuthenticate error:', err);
-		}
-
-		
-		
-		 try {
-			
-			 
-			const data = Buffer.allocUnsafe(44).fill(0);
-			  
-			const payload = Buffer.from(xummPayload);
-			
-			
-			data.write(payload.toString());
-			
-			await reader.write(6, data);
-			
-			console.log(xummPayload +": From Xumm Has Been Written To The Card")
-			
-		
-		 } catch (err) {
-			console.log('write error:', err);
-			return;
-		 }
-		 try {
-
-			 const data = await ultralight.fastRead(4, 19);
-			 const payload =  Buffer.from(data).toString();
-	
-			 console.log('Data Successfully Written:' + payload);
-			 
-		
-
-		 } catch (err) {
-			 console.log('fastRead error:', err);
-			 return;
-		 }
-
-
-		});
-
-	reader.on('error', err => {
-		console.log(`an error occurred`, reader, err);
-	});
-
-	reader.on('end', () => {
-		console.log(`device removed`, reader);
-	});
-
-});
-
-nfc.on('error', err => {
-	console.log(`an error occurred`, err);
-	
-});
