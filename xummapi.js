@@ -111,8 +111,8 @@ function authenticate(){
 		    console.log("this is L: " + L);
 		    
 		   var Loginaddress ;
-			  module.exports.Loginaddress = L.meta.destination;
-			  console.log('\x1b[34m%s\x1b[0m',"Login Address: " + L.meta.destination);
+			  module.exports.Loginaddress = L.response.account;
+			  console.log('\x1b[34m%s\x1b[0m',"Login Address: " + L.response.account);
 
 			
 		    
