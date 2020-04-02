@@ -10,7 +10,7 @@ var options = {
     'content-type': 'application/json',
     'x-api-key': apikey,
     'x-api-secret': apisecret,
-    authorization: 'Bearer 1511bd5b-304a-492f-ae60-b276e43768b8'
+    authorization: 'Bearer '
   },
   body: {
 		  "txjson": {
@@ -47,15 +47,12 @@ function status(){
 
 	var options = {
 	  method: 'GET',
-	  url: 'https://xumm.app/api/v1/platform/payload/' + data,
-	  qs: {'': ''},
+	  url: 'https://xumm.app/api/v1/platform/payload/' + data
 	  headers: {
 	    'x-api-key': apikey,
 	    'x-api-secret': apisecret,
 	    'content-type': 'application/json',
-	    authorization: 'Bearer 
 	  },
-	  jar: 'JAR'
 	};
 
 	request(options, function (error, response, body) {
