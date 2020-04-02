@@ -1,4 +1,4 @@
-
+var request = require('request);
 
 // works
 function genpayload()
@@ -82,3 +82,55 @@ function status(){
 	});
 	
 }
+
+function authenticate(){
+		var data = String(b);
+
+		var jar = request.jar();
+		
+		
+		var http = require("https");
+
+		var options = {
+		  "method": "GET",
+		  "hostname": "xumm.app",
+		  "port": null,
+		  "path": "/api/v1/platform/payload/99e2e466-a629-4aa7-b801-a1742571ab2a?=",
+		  "headers": {
+		    "cookie": "__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754",
+		    "x-api-key": "935c604a-3309-4700-97c0-93fab7c2478f",
+		    "x-api-secret": "1511bd5b-304a-492f-ae60-b276e43768b8",
+		    "content-type": "application/json",
+		    "content-length": "0",
+		    "authorization": "Bearer 1511bd5b-304a-492f-ae60-b276e43768b8"
+		  }
+		};
+
+		var req = http.request(options, function (res) {
+		  var chunks = [];
+
+		  res.on("data", function (chunk) {
+		    chunks.push(chunk);
+		  });
+
+		  res.on("end", function () {
+		    var body = Buffer.concat(chunks);
+		    var L = body;
+		    console.log("this is L: " + L);
+		    
+		   var Loginaddress ;
+			  module.exports.Loginaddress = L.meta.destination;
+			  console.log('\x1b[34m%s\x1b[0m',"Login Address: " + L.meta.destination);
+
+			
+		    
+		  });
+		});
+
+		req.end();
+		
+				  
+
+		  
+	}
+	
