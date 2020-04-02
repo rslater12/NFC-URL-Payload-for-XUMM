@@ -2,8 +2,6 @@ var request = require('request);
 
 // works
 function genpayload()
-var jar = request.jar();
-jar.setCookie(request.cookie("__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754"), "https://xumm.app/api/v1/platform/payload");
 
 var options = {
   method: 'POST',
@@ -47,9 +45,6 @@ function status(){
 	
 	var data = String("5ecd56d2-4048-4180-8731-ee249cb1fa84");
 
-	var jar = request.jar();
-	jar.setCookie(request.cookie("__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754"), "https://xumm.app/api/v1/platform/payload/" + data);
-
 	var options = {
 	  method: 'GET',
 	  url: 'https://xumm.app/api/v1/platform/payload/' + data,
@@ -58,7 +53,7 @@ function status(){
 	    'x-api-key': apikey,
 	    'x-api-secret': apisecret,
 	    'content-type': 'application/json',
-	    authorization: 'Bearer 1511bd5b-304a-492f-ae60-b276e43768b8'
+	    authorization: 'Bearer 
 	  },
 	  jar: 'JAR'
 	};
@@ -84,11 +79,8 @@ function status(){
 }
 
 function authenticate(){
-		var data = String(b);
+		//var data = String(b);
 
-		var jar = request.jar();
-		
-		
 		var http = require("https");
 
 		var options = {
@@ -98,8 +90,8 @@ function authenticate(){
 		  "path": "/api/v1/platform/payload/99e2e466-a629-4aa7-b801-a1742571ab2a?=",
 		  "headers": {
 		    "cookie": "__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754",
-		    "x-api-key": "935c604a-3309-4700-97c0-93fab7c2478f",
-		    "x-api-secret": "1511bd5b-304a-492f-ae60-b276e43768b8",
+		    "x-api-key": "",
+		    "x-api-secret": "1",
 		    "content-type": "application/json",
 		    "content-length": "0",
 		    "authorization": "Bearer 1511bd5b-304a-492f-ae60-b276e43768b8"
