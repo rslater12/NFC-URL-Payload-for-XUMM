@@ -17,8 +17,6 @@ const { NFC } = require('nfc-pcsc');
 const nfc = new NFC(); 
 
 function createPayload() {
-var jar = request.jar();
-jar.setCookie(request.cookie("__cfduid=d29c9663e0e4444bede81bf4adb7f79891585045754"), "https://xumm.app/api/v1/platform/payload");
 
 var options = {
   method: 'POST',
