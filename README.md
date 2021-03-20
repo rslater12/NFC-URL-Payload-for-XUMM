@@ -1,4 +1,4 @@
-# NFC-URL-for-XUMM
+# NFC-URL-Payload-for-XUMM
 
 #V1 ARC122u Folder
 
