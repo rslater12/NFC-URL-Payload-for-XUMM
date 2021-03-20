@@ -25,3 +25,8 @@ once Lib NFC is installed, try dropping the files in PN532 into the Utils folder
 
 > node ./bin/www
 
+
+#iOS App
+
+iOS App in order to allow an Iphone to read the Xumm Payload
+
