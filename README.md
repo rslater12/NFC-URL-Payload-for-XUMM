@@ -19,6 +19,8 @@ Currently iv opted to write the file again and then make/rebuild it before prese
 
 once Lib NFC is installed, try dropping the files in PN532 into the Utils folder of teh Lib NFC and then run 
 
+>Add Xumm Developer API Keys to env file and rename to .env
+
 >npm i
 
 > node ./bin/www
