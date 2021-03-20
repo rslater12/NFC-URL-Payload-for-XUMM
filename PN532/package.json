@@ -1,0 +1,34 @@
+{
+  "name": "xumm_pos",
+  "version": "0.0.1",
+  "description": "Point of Sale Terminal for XUMM and XRPl",
+  "scripts": {
+    "start": "node ./bin/www",
+    "install": "node-gyp-build"
+  },
+  "author": "Richard Slater",
+  "license": "ISC",
+  "dependencies": {
+    "bindings": "^1.3.0",
+    "bluebird": "^3.5.0",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "dotenv": "^8.2.0",
+    "ejs": "~2.6.1",
+    "events": "^3.2.0",
+    "express": "~4.16.1",
+    "fs": "0.0.1-security",
+    "http": "0.0.1-security",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "nan": "^2.6.2",
+    "ndef": "^0.2.0",
+    "node-gyp-build": "^4.2.3",
+    "nodemon": "^2.0.6",
+    "request": "^2.88.2",
+    "serialport": "^9.0.6",
+    "socket.io": "^3.0.3",
+    "socket.io-client": "^3.0.3",
+    "winston": "^3.3.3"
+  }
+}
