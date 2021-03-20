@@ -14,19 +14,24 @@ import {
    
 } from 'react-native'
 
-import NfcManager, { NfcTech, NfcAdapter, tech, Nfc,} from 'react-native-nfc-manager';
-import AwesomeAlert from 'react-native-awesome-alerts';
+import NfcManager, { NfcTech, NfcEvents, NfcAdapter, Iso15693IOS, Ndef,tech, Nfc,} from 'react-native-nfc-manager';
+import  StackNavigator from 'react-navigation';
+import {Logo} from './src/image';
+//import Router from './route';
 
 let text;
 let url;
 let url1;
+let url2;
 let part = "https://xumm.app/sign/"
+let PoS;
 
 class App extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            log: "XRPL Magic",
+            log: "XUMM Magic",
+            log1: "XUMM Payload",
             text: ""
             
         }
@@ -35,38 +40,110 @@ class App extends React.Component {
      
     componentDidMount() {
         NfcManager.start()
+        NfcManager.setEventListener(NfcEvents.DiscoverTag, (tag) => {
+         // console.warn('tag', tag);
+         /*  console.warn(
+            'tag payload',
+            String.fromCharCode(...tag.ndefMessage[0].payload),
+          ); */
+          
+        PoS = String.fromCharCode(...tag.ndefMessage[0].payload);
+        url2 = PoS.slice(32, 70)
+        url = part + url2;
+        this.setState({
+          log1: url2
+      });
+        	Linking.canOpenURL(url)
+        	  .then((supported) => {
+        	    if (!supported) {
+        	      console.log("Can't handle url: " + url);
+        	    } else {
+        	      return Linking.openURL(url);
+        	    }
+        	  })
+          NfcManager.setAlertMessageIOS('I got your tag!');
+          NfcManager.cancelTechnologyRequest().catch(() => 0);
+        });
+        if (Platform.OS === 'android') {
+        Linking.getInitialURL().then(url => {
+            this.navigate(url);
+          });
+        } else {
+        	
         Linking.addEventListener('url', this._handleOpenURL);
        
-   
+        }
     }
  
     componentWillUnmount() {
         this._cleanUp();
+        Linking.removeEventListener('url', this.handleOpenURL);
     }
  
     _cleanUp = () => {
         NfcManager.cancelTechnologyRequest().catch(() => 0);
+        NfcManager.unregisterTagEvent().catch(() => 0);   
+       // NfcManager.setEventListener(NfcEvents.DiscoverTag, null); 
     }
     
     _handleOpenURL(event) {
     	  console.log(event.url);
+    	  //this.navigate(event.url);
     	}
  
+    navigate = (url) => {
+        const { navigate } = this.props.navigation;
+
+        const route = url.replace(/.*?:\/\//g, '');
+        const routeName = route.split('/')[0];
+        
+        if (routeName === 'app') {
+        	this._handleOpenURL()
+        };
+    }
+    
+    readNdef = async () => {
+      try {
+        let text = ""
+       await NfcManager.registerTagEvent({alertMessage: 'Present Phone To XUMM PoS!!!'})
+        if (Platform.OS === 'ios') {
+         await NfcManager.requestTechnology(NfcTech.MifareIOS, NfcTech.Iso15693IOS, NfcTech.IsoDep);
+        } else {
+         await NfcManager.requestTechnology(NfcTech.Ndef);
+        }
+       // console.warn(text)
+        
+      /*  let tag = await NfcManager.getTag();
+     //  console.warn(tag) 
+       Alert.alert(tag.ndefMessage)
+       this.setState({
+        log1: String.fromCharCode(...tag.ndefMessage[0].payload)
+    })
+        this._cleanUp();
+ */
+      } catch (ex) {
+        this._cleanUp();
+      }
+    
+
+    }
+
     readData = async () => {
  
-         
- 
+
+// Mifare Ultralight EV1
+  
         try {
  
              
             let tech = Platform.OS === 'ios' ? NfcTech.MifareIOS : NfcTech.NfcA;
             
             let resp = await NfcManager.requestTechnology(tech, {
-                alertMessage: 'Present Phone To Card'
+                alertMessage: 'Present Phone To XUMM Card!!'
             });
  
             let cmd = Platform.OS === 'ios' ? NfcManager.sendMifareCommandIOS : NfcManager.transceive;
-
+                                // bytes 58 0x3A, 75 bytes 0x4b,
             resp = await cmd([0x3A, 4, 4]);
             let payloadLength = parseInt(resp.toString().split(",")[1]);
             let payloadPages = Math.ceil(payloadLength / 4);
@@ -106,7 +183,7 @@ class App extends React.Component {
         try
         {
         	
-        	url1 = this.state.log;
+        	url1 = this.state.log1;
         	url = part + url1;
         	Linking.canOpenURL(url)
         	  .then((supported) => {
@@ -120,8 +197,6 @@ class App extends React.Component {
         catch (error) {
             alert( "Error Loading URL: "+url )
         }
-   
-
 
     }
  
@@ -174,7 +249,7 @@ class App extends React.Component {
             resp = await cmd(currentPayload);
 
             this.setState({
-                log: resp.toString()
+                log1: resp.toString()
             })
 
             this._cleanUp();
@@ -199,22 +274,41 @@ class App extends React.Component {
              
  
                 
-
+            	<Image style={styles.image} source={Logo} />
                
- 
+            	<View style={styles.log}>
+            	<Text>{this.state.log}</Text>
+              <Text>{this.state.log1}</Text>
+            	</View>
+        
+        
+        
                 <TouchableOpacity
                     style={styles.buttonRead}
                     onPress= {this.readData}>
-                    <Text style={styles.buttonText}>NFC XUMM URL</Text>
+                    <Text style={styles.buttonText}>XUMM Card</Text>
                 </TouchableOpacity>
                 
+                <TouchableOpacity
+                    style={styles.buttonRead}
+                    onPress= {this.readNdef}>
+                    <Text style={styles.buttonText}>XUMM PoS</Text>
+                </TouchableOpacity>
  
-                <View style={styles.log}>
-                <Text>{this.state.log}</Text>
-            </View>
+                  <TextInput
+                              style={styles.textInput1}
+                               onChangeText={this.onChangeText}
+                              autoCompleteType="off"
+                               autoCapitalize="none"
+                               autoCorrect={false}
+                               placeholderTextColor="#888888"
+                               placeholder="Write XUMM Payload" />
 
-           
-             
+                            	   <TouchableOpacity
+                             style={styles.buttonRead}
+                               onPress={this.writeData}>
+                             <Text style={styles.buttonText}>Write to XUMM Card</Text>
+                          </TouchableOpacity> 
  
                 </ScrollView>
  
@@ -251,23 +345,45 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    logo: {
+        marginBottom: 20,
+        marginLeft: 20,
+        marginRight: 20,
+        height: 50,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 16,
+        backgroundColor: 'blue',
+         
+    },
+    logotext: {
+        color: '#ffffff',
+    },
+    textInput1: {
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 20,
+        height: 50,
+        textAlign: 'center',
+        color: 'black'
+    }
     
  
 })
+
+/* let text = ""
+await NfcManager.registerTagEvent()
+ if (Platform.OS === 'ios') {
+  await NfcManager.requestTechnology(NfcTech.MifareIOS, NfcTech.Iso15693IOS, NfcTech.IsoDep);
+ } else {
+  await NfcManager.requestTechnology(NfcTech.Ndef);
+ }
+// console.warn(text)
  
-//  <TextInput
- //                             style={styles.textInput1}
- //                            onChangeText={this.onChangeText}
- //                             autoCompleteType="off"
- //                              autoCapitalize="none"
- //                              autoCorrect={false}
- //                              placeholderTextColor="#888888"
- //                              placeholder="Insert XRP Address to write" />
-//
-  //                          	   <TouchableOpacity
-  //                           style={styles.buttonRead}
-  //                             onPress={this.writeData}>
-  //                           <Text style={styles.buttonText}>Write</Text>
-  //                         </TouchableOpacity>
-                     
+ let tag = await NfcManager.getTag();
+console.warn(tag) 
+
+ /*Have had a response 3 times using this method but appears tempomental, when trying to change to present data, i lost the connection and cant get it back. So F*************ING frustrating*/
+// this._cleanUp(); */
+
 export default App;
